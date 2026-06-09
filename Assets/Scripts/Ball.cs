@@ -26,17 +26,21 @@ public class Ball : MonoBehaviour
     }
 
     // 當球撞到牆壁反彈時，修正它的前進方向
+   
+
+    // 將原本的 OnTriggerEnter 改為 OnCollisionEnter
     private void OnCollisionEnter(Collision collision)
     {
-        // 如果撞到牆壁，利用物理反射計算新方向
-        currentDirection = Vector3.Reflect(currentDirection, collision.contacts[0].normal).normalized;
-    }
+        // 1. 先處理反彈 (這段邏輯移到這裡)
+        Vector3 normal = collision.contacts[0].normal;
+        currentDirection = Vector3.Reflect(currentDirection, normal).normalized;
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.CompareTag("Player"))
+        // 2. 處理加分
+        if (collision.gameObject.CompareTag("Player"))
         {
             ScoreManager.AddScore(scoreValue);
+            // --- 在 Console 顯示訊息 ---
+            Debug.Log("得分！目前獲得的分數為: " + scoreValue);
             Destroy(gameObject);
         }
     }
